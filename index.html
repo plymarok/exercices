@@ -16,7 +16,7 @@
     button { margin-top: 10px; padding: 10px 15px; border: none; border-radius: 6px; background: #0074D9; color: #fff; cursor: pointer; }
     button:hover { background: #005fa3; }
     #score { font-size: 18px; font-weight: bold; text-align: center; margin: 20px 0; }
-    .recap { background: #fff; padding: 10px; margin: 4px 0; border-radius: 6px; }
+    .recap { background: #fff; padding: 10px; margin: 6px 0; border-radius: 6px; }
     .good { color: green; font-weight: bold; }
     .bad { color: red; font-weight: bold; }
   </style>
@@ -115,11 +115,12 @@
 
       if (userAns === correct) {
         score++;
-        line.innerHTML = `<b>Q${current+1} :</b> <span class="good">${questions[current].a}</span>`;
+        line.innerHTML = `<b>Q${current+1} :</b> ${questions[current].q}<br>
+                          Réponse : <span class="good">${questions[current].a}</span>`;
       } else {
-        line.innerHTML = `<b>Q${current+1} :</b> 
-                          <span class="bad">${input.value || "(vide)"}</span> 
-                          → ${questions[current].a}`;
+        line.innerHTML = `<b>Q${current+1} :</b> ${questions[current].q}<br>
+                          Ta réponse : <span class="bad">${input.value || "(vide)"}</span><br>
+                          Correct : <span class="good">${questions[current].a}</span>`;
       }
 
       recapDiv.appendChild(line);
