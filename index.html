@@ -8,7 +8,7 @@
     body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
     h1 { text-align: center; color: #333; }
     .wrap { max-width: 800px; margin: 0 auto; }
-    .question, .result {
+    .question {
       background: #fff; padding: 15px; margin: 15px 0;
       border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
@@ -16,6 +16,7 @@
     button { margin-top: 10px; padding: 10px 15px; border: none; border-radius: 6px; background: #0074D9; color: #fff; cursor: pointer; }
     button:hover { background: #005fa3; }
     #score { font-size: 18px; font-weight: bold; text-align: center; margin: 20px 0; }
+    .recap { background: #fff; padding: 10px; margin: 4px 0; border-radius: 6px; }
     .good { color: green; font-weight: bold; }
     .bad { color: red; font-weight: bold; }
   </style>
@@ -23,55 +24,50 @@
 <body>
   <div class="wrap">
     <h1>Quiz Italien LV2 — Verbes</h1>
-    <div id="quiz"></div>
+    <div id="questionBox"></div>
     <div id="score"></div>
+    <h3>Récapitulatif :</h3>
+    <div id="recap"></div>
   </div>
 
   <script>
     const bank = [
-      // ESSERE
       { q: "Comment dit-on « je suis » en italien ?", a: "sono" },
       { q: "Comment dit-on « tu es » en italien ?", a: "sei" },
       { q: "Comment dit-on « il/elle est » en italien ?", a: "è" },
       { q: "Comment dit-on « nous sommes » en italien ?", a: "siamo" },
       { q: "Comment dit-on « vous êtes » en italien ?", a: "siete" },
       { q: "Comment dit-on « ils/elles sont » en italien ?", a: "sono" },
-      // AVERE
       { q: "Comment dit-on « j’ai » en italien ?", a: "ho" },
       { q: "Comment dit-on « tu as » en italien ?", a: "hai" },
       { q: "Comment dit-on « il/elle a » en italien ?", a: "ha" },
       { q: "Comment dit-on « nous avons » en italien ?", a: "abbiamo" },
       { q: "Comment dit-on « vous avez » en italien ?", a: "avete" },
       { q: "Comment dit-on « ils/elles ont » en italien ?", a: "hanno" },
-      // FARE
       { q: "Comment dit-on « je fais » en italien ?", a: "faccio" },
       { q: "Comment dit-on « tu fais » en italien ?", a: "fai" },
       { q: "Comment dit-on « il/elle fait » en italien ?", a: "fa" },
       { q: "Comment dit-on « nous faisons » en italien ?", a: "facciamo" },
       { q: "Comment dit-on « vous faites » en italien ?", a: "fate" },
       { q: "Comment dit-on « ils/elles font » en italien ?", a: "fanno" },
-      // ANDARE
       { q: "Comment dit-on « je vais » en italien ?", a: "vado" },
       { q: "Comment dit-on « tu vas » en italien ?", a: "vai" },
       { q: "Comment dit-on « il/elle va » en italien ?", a: "va" },
       { q: "Comment dit-on « nous allons » en italien ?", a: "andiamo" },
       { q: "Comment dit-on « vous allez » en italien ?", a: "andate" },
       { q: "Comment dit-on « ils/elles vont » en italien ?", a: "vanno" },
-      // POTERE
       { q: "Comment dit-on « je peux » en italien ?", a: "posso" },
       { q: "Comment dit-on « tu peux » en italien ?", a: "puoi" },
       { q: "Comment dit-on « il/elle peut » en italien ?", a: "può" },
       { q: "Comment dit-on « nous pouvons » en italien ?", a: "possiamo" },
       { q: "Comment dit-on « vous pouvez » en italien ?", a: "potete" },
       { q: "Comment dit-on « ils/elles peuvent » en italien ?", a: "possono" },
-      // CHIAMARSI
       { q: "Comment dit-on « je m’appelle » en italien ?", a: "mi chiamo" },
       { q: "Comment dit-on « tu t’appelles » en italien ?", a: "ti chiami" },
       { q: "Comment dit-on « il/elle s’appelle » en italien ?", a: "si chiama" },
       { q: "Comment dit-on « nous nous appelons » en italien ?", a: "ci chiamiamo" },
       { q: "Comment dit-on « vous vous appelez » en italien ?", a: "vi chiamate" },
       { q: "Comment dit-on « ils/elles s’appellent » en italien ?", a: "si chiamano" },
-      // PARLARE / CREDERE
       { q: "Conjugue PARLARE avec « nous » (nous parlons)", a: "parliamo" },
       { q: "Conjugue CREDERE avec « vous » (vous croyez)", a: "credete" }
     ];
@@ -80,64 +76,60 @@
     let current = 0;
     let score = 0;
 
-    function shuffle(arr) {
-      return arr.sort(() => Math.random() - 0.5);
-    }
+    function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
 
     function startQuiz() {
       questions = shuffle(bank).slice(0, 20);
       current = 0;
       score = 0;
-      document.getElementById("quiz").innerHTML = "";
+      document.getElementById("recap").innerHTML = "";
       document.getElementById("score").innerText = "Score : 0 / 20";
-      showNextQuestion();
+      showQuestion();
     }
 
-    function showNextQuestion() {
+    function showQuestion() {
       if (current >= questions.length) {
-        const endDiv = document.createElement("div");
-        endDiv.className = "result";
-        endDiv.innerHTML = `<h2>Quiz terminé ! Score final : ${score} / 20</h2>`;
-        document.getElementById("quiz").appendChild(endDiv);
+        document.getElementById("questionBox").innerHTML =
+          `<div class="question"><h2>Quiz terminé ! Score final : ${score} / 20</h2></div>`;
         return;
       }
-
       const q = questions[current];
-      const div = document.createElement("div");
-      div.className = "question";
-      div.innerHTML = `
-        <p><b>Question ${current+1}/20 :</b> ${q.q}</p>
-        <input type="text" id="answer${current}" placeholder="Réponse en italien">
-        <button onclick="submitAnswer(${current})">Valider</button>
-      `;
-      document.getElementById("quiz").appendChild(div);
+      document.getElementById("questionBox").innerHTML = `
+        <div class="question">
+          <p><b>Question ${current+1}/20 :</b> ${q.q}</p>
+          <input type="text" id="answer" placeholder="Réponse en italien">
+          <button onclick="submitAnswer()">Valider</button>
+        </div>`;
     }
 
     function normalize(s){ return s.toLowerCase().trim().replace("’","'"); }
 
-    function submitAnswer(idx) {
-      const input = document.getElementById("answer"+idx);
+    function submitAnswer() {
+      const input = document.getElementById("answer");
       const userAns = normalize(input.value);
-      const correct = normalize(questions[idx].a);
+      const correct = normalize(questions[current].a);
 
-      const res = document.createElement("div");
-      res.className = "result";
+      const recapDiv = document.getElementById("recap");
+      const line = document.createElement("div");
+      line.className = "recap";
+
       if (userAns === correct) {
         score++;
-        res.innerHTML = `<p><b>Q${idx+1} :</b> ✔️ Bonne réponse : <span class="good">${questions[idx].a}</span></p>`;
+        line.innerHTML = `<b>Q${current+1} :</b> <span class="good">${questions[current].a}</span>`;
       } else {
-        res.innerHTML = `<p><b>Q${idx+1} :</b> ❌ Ta réponse : <span class="bad">${input.value || "(vide)"}</span><br>
-                         Réponse correcte : <span class="good">${questions[idx].a}</span></p>`;
+        line.innerHTML = `<b>Q${current+1} :</b> 
+                          <span class="bad">${input.value || "(vide)"}</span> 
+                          → ${questions[current].a}`;
       }
-      document.getElementById("quiz").appendChild(res);
 
+      recapDiv.appendChild(line);
       document.getElementById("score").innerText = `Score : ${score} / 20`;
 
       current++;
-      showNextQuestion();
+      showQuestion();
     }
 
-    // lancer le quiz au chargement
+    // Démarrage
     startQuiz();
   </script>
 </body>
