@@ -32,44 +32,48 @@
 
   <script>
     const bank = [
+      // ESSERE
       { q: "Comment dit-on « je suis » en italien ?", a: "sono" },
       { q: "Comment dit-on « tu es » en italien ?", a: "sei" },
       { q: "Comment dit-on « il/elle est » en italien ?", a: "è" },
       { q: "Comment dit-on « nous sommes » en italien ?", a: "siamo" },
       { q: "Comment dit-on « vous êtes » en italien ?", a: "siete" },
       { q: "Comment dit-on « ils/elles sont » en italien ?", a: "sono" },
+      // AVERE
       { q: "Comment dit-on « j’ai » en italien ?", a: "ho" },
       { q: "Comment dit-on « tu as » en italien ?", a: "hai" },
       { q: "Comment dit-on « il/elle a » en italien ?", a: "ha" },
       { q: "Comment dit-on « nous avons » en italien ?", a: "abbiamo" },
       { q: "Comment dit-on « vous avez » en italien ?", a: "avete" },
       { q: "Comment dit-on « ils/elles ont » en italien ?", a: "hanno" },
+      // FARE
       { q: "Comment dit-on « je fais » en italien ?", a: "faccio" },
       { q: "Comment dit-on « tu fais » en italien ?", a: "fai" },
       { q: "Comment dit-on « il/elle fait » en italien ?", a: "fa" },
       { q: "Comment dit-on « nous faisons » en italien ?", a: "facciamo" },
       { q: "Comment dit-on « vous faites » en italien ?", a: "fate" },
       { q: "Comment dit-on « ils/elles font » en italien ?", a: "fanno" },
+      // ANDARE
       { q: "Comment dit-on « je vais » en italien ?", a: "vado" },
       { q: "Comment dit-on « tu vas » en italien ?", a: "vai" },
       { q: "Comment dit-on « il/elle va » en italien ?", a: "va" },
       { q: "Comment dit-on « nous allons » en italien ?", a: "andiamo" },
       { q: "Comment dit-on « vous allez » en italien ?", a: "andate" },
       { q: "Comment dit-on « ils/elles vont » en italien ?", a: "vanno" },
+      // POTERE
       { q: "Comment dit-on « je peux » en italien ?", a: "posso" },
       { q: "Comment dit-on « tu peux » en italien ?", a: "puoi" },
       { q: "Comment dit-on « il/elle peut » en italien ?", a: "può" },
       { q: "Comment dit-on « nous pouvons » en italien ?", a: "possiamo" },
       { q: "Comment dit-on « vous pouvez » en italien ?", a: "potete" },
       { q: "Comment dit-on « ils/elles peuvent » en italien ?", a: "possono" },
+      // CHIAMARSI
       { q: "Comment dit-on « je m’appelle » en italien ?", a: "mi chiamo" },
       { q: "Comment dit-on « tu t’appelles » en italien ?", a: "ti chiami" },
       { q: "Comment dit-on « il/elle s’appelle » en italien ?", a: "si chiama" },
       { q: "Comment dit-on « nous nous appelons » en italien ?", a: "ci chiamiamo" },
       { q: "Comment dit-on « vous vous appelez » en italien ?", a: "vi chiamate" },
-      { q: "Comment dit-on « ils/elles s’appellent » en italien ?", a: "si chiamano" },
-      { q: "Conjugue PARLARE avec « nous » (nous parlons)", a: "parliamo" },
-      { q: "Conjugue CREDERE avec « vous » (vous croyez)", a: "credete" }
+      { q: "Comment dit-on « ils/elles s’appellent » en italien ?", a: "si chiamano" }
     ];
 
     let questions = [];
@@ -98,7 +102,7 @@
         <div class="question">
           <p><b>Question ${current+1}/20 :</b> ${q.q}</p>
           <input type="text" id="answer" placeholder="Réponse en italien">
-          <button onclick="submitAnswer()">Valider</button>
+          <button onclick="submitAnswer()">${current === 19 ? "Terminer" : "Valider"}</button>
         </div>`;
     }
 
@@ -135,3 +139,4 @@
   </script>
 </body>
 </html>
+
