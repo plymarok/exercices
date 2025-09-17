@@ -2,85 +2,137 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz Italien LV2 - Verbes</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    .question {
-      background: #fff;
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      background: #0074D9;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-    #score {
-      font-size: 18px;
-      font-weight: bold;
-      text-align: center;
-      margin-top: 20px;
-    }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
+    h1 { text-align: center; color: #333; }
+    .wrap { max-width: 800px; margin: 0 auto; }
+    .question { background: #fff; padding: 15px; margin: 15px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    input[type="text"] { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+    .actions { text-align: center; margin-top: 20px; }
+    button { margin: 6px; padding: 10px 15px; border: none; border-radius: 6px; background: #0074D9; color: #fff; cursor: pointer; }
+    button:hover { background: #005fa3; }
+    #score { font-size: 18px; font-weight: bold; text-align: center; margin: 20px 0; }
+    .good { background: #e8f6ec; }
+    .bad  { background: #fdecea; }
   </style>
 </head>
 <body>
-  <h1>Quiz Italien LV2 - Verbes</h1>
-  <div id="quiz"></div>
-  <button onclick="checkAnswers()">Vérifier mes réponses</button>
-  <div id="score"></div>
+  <div class="wrap">
+    <h1>Quiz Italien LV2 — Verbes</h1>
+    <div id="quiz"></div>
+    <div class="actions">
+      <button onclick="checkAnswers()">Vérifier mes réponses</button>
+      <button onclick="resetQuiz()">Nouvelle partie (20 questions aléatoires)</button>
+    </div>
+    <div id="score"></div>
+  </div>
 
   <script>
-    const questions = [
-      { q: "Comment dit-on 'je suis' en italien ?", a: "sono" },
-      { q: "Comment dit-on 'tu as' en italien ?", a: "hai" },
-      { q: "Comment dit-on 'il fait' en italien ?", a: "fa" },
-      { q: "Comment dit-on 'nous allons' en italien ?", a: "andiamo" },
-      { q: "Comment dit-on 'ils peuvent' en italien ?", a: "possono" },
-      { q: "Comment dit-on 'je m’appelle' en italien ?", a: "mi chiamo" },
-      { q: "Conjugue PARLARE avec 'nous' (nous parlons)", a: "parliamo" },
-      { q: "Conjugue CREDERE avec 'vous' (vous croyez)", a: "credete" }
+    const bank = [
+      // ESSERE
+      { q: "Comment dit-on « je suis » en italien ?", a: "sono" },
+      { q: "Comment dit-on « tu es » en italien ?", a: "sei" },
+      { q: "Comment dit-on « il/elle est » en italien ?", a: "è" },
+      { q: "Comment dit-on « nous sommes » en italien ?", a: "siamo" },
+      { q: "Comment dit-on « vous êtes » en italien ?", a: "siete" },
+      { q: "Comment dit-on « ils/elles sont » en italien ?", a: "sono" },
+
+      // AVERE
+      { q: "Comment dit-on « j’ai » en italien ?", a: "ho" },
+      { q: "Comment dit-on « tu as » en italien ?", a: "hai" },
+      { q: "Comment dit-on « il/elle a » en italien ?", a: "ha" },
+      { q: "Comment dit-on « nous avons » en italien ?", a: "abbiamo" },
+      { q: "Comment dit-on « vous avez » en italien ?", a: "avete" },
+      { q: "Comment dit-on « ils/elles ont » en italien ?", a: "hanno" },
+
+      // FARE
+      { q: "Comment dit-on « je fais » en italien ?", a: "faccio" },
+      { q: "Comment dit-on « tu fais » en italien ?", a: "fai" },
+      { q: "Comment dit-on « il/elle fait » en italien ?", a: "fa" },
+      { q: "Comment dit-on « nous faisons » en italien ?", a: "facciamo" },
+      { q: "Comment dit-on « vous faites » en italien ?", a: "fate" },
+      { q: "Comment dit-on « ils/elles font » en italien ?", a: "fanno" },
+
+      // ANDARE
+      { q: "Comment dit-on « je vais » en italien ?", a: "vado" },
+      { q: "Comment dit-on « tu vas » en italien ?", a: "vai" },
+      { q: "Comment dit-on « il/elle va » en italien ?", a: "va" },
+      { q: "Comment dit-on « nous allons » en italien ?", a: "andiamo" },
+      { q: "Comment dit-on « vous allez » en italien ?", a: "andate" },
+      { q: "Comment dit-on « ils/elles vont » en italien ?", a: "vanno" },
+
+      // POTERE
+      { q: "Comment dit-on « je peux » en italien ?", a: "posso" },
+      { q: "Comment dit-on « tu peux » en italien ?", a: "puoi" },
+      { q: "Comment dit-on « il/elle peut » en italien ?", a: "può" },
+      { q: "Comment dit-on « nous pouvons » en italien ?", a: "possiamo" },
+      { q: "Comment dit-on « vous pouvez » en italien ?", a: "potete" },
+      { q: "Comment dit-on « ils/elles peuvent » en italien ?", a: "possono" },
+
+      // CHIAMARSI
+      { q: "Comment dit-on « je m’appelle » en italien ?", a: "mi chiamo" },
+      { q: "Comment dit-on « tu t’appelles » en italien ?", a: "ti chiami" },
+      { q: "Comment dit-on « il/elle s’appelle » en italien ?", a: "si chiama" },
+      { q: "Comment dit-on « nous nous appelons » en italien ?", a: "ci chiamiamo" },
+      { q: "Comment dit-on « vous vous appelez » en italien ?", a: "vi chiamate" },
+      { q: "Comment dit-on « ils/elles s’appellent » en italien ?", a: "si chiamano" },
+
+      // PARLARE / CREDERE
+      { q: "Conjugue PARLARE avec « nous » (nous parlons)", a: "parliamo" },
+      { q: "Conjugue CREDERE avec « vous » (vous croyez)", a: "credete" }
     ];
 
-    const quizDiv = document.getElementById("quiz");
-    questions.forEach((item, index) => {
-      const div = document.createElement("div");
-      div.className = "question";
-      div.innerHTML = `
-        <p><b>Q${index+1} :</b> ${item.q}</p>
-        <input type="text" id="q${index}" placeholder="Réponse en italien">
-      `;
-      quizDiv.appendChild(div);
-    });
+    let selected = [];
+
+    function pickRandom() {
+      const shuffled = bank.sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 20);
+    }
+
+    function renderQuiz() {
+      selected = pickRandom();
+      const container = document.getElementById("quiz");
+      container.innerHTML = "";
+      selected.forEach((item, i) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `
+          <p><b>Q${i+1}.</b> ${item.q}</p>
+          <input type="text" id="q${i}" placeholder="Réponse en italien">
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById("score").innerText = "";
+    }
+
+    function normalize(s){ return s.toLowerCase().trim().replace("’","'"); }
 
     function checkAnswers() {
       let score = 0;
-      questions.forEach((item, index) => {
-        const answer = document.getElementById("q"+index).value.trim().toLowerCase();
-        if (answer === item.a.toLowerCase()) {
+      selected.forEach((item, i) => {
+        const ans = document.getElementById("q"+i).value;
+        const div = document.getElementsByClassName("question")[i];
+        if (normalize(ans) === normalize(item.a)) {
           score++;
+          div.classList.add("good");
+          div.classList.remove("bad");
+        } else {
+          div.classList.add("bad");
+          div.classList.remove("good");
         }
       });
-      document.getElementById("score").innerText = 
-        `Score : ${score} / ${questions.length}`;
+      document.getElementById("score").innerText = `Score : ${score} / 20`;
     }
+
+    function resetQuiz() {
+      renderQuiz();
+    }
+
+    // première génération
+    renderQuiz();
   </script>
 </body>
 </html>
+
