@@ -48,7 +48,7 @@
     <h1>Quiz Italien LV2 — Verbes</h1>
 
     <div class="toolbar">
-      <button class="btn-secondary btn" id="restartBtn" style="display:none;">Rejouer (nouveau tirage)</button>
+      <button class="btn btn-secondary" onclick="resetQuiz()">🔄 Reset</button>
     </div>
 
     <div id="questionBox"></div>
@@ -58,7 +58,6 @@
   </div>
 
   <script>
-    // -------- Banque de questions --------
     const bank = [
       // ESSERE
       { q: "Comment dit-on « je suis » en italien ?", a: "sono" },
@@ -67,7 +66,6 @@
       { q: "Comment dit-on « nous sommes » en italien ?", a: "siamo" },
       { q: "Comment dit-on « vous êtes » en italien ?", a: "siete" },
       { q: "Comment dit-on « ils/elles sont » en italien ?", a: "sono" },
-
       // AVERE
       { q: "Comment dit-on « j’ai » en italien ?", a: "ho" },
       { q: "Comment dit-on « tu as » en italien ?", a: "hai" },
@@ -75,7 +73,6 @@
       { q: "Comment dit-on « nous avons » en italien ?", a: "abbiamo" },
       { q: "Comment dit-on « vous avez » en italien ?", a: "avete" },
       { q: "Comment dit-on « ils/elles ont » en italien ?", a: "hanno" },
-
       // FARE
       { q: "Comment dit-on « je fais » en italien ?", a: "faccio" },
       { q: "Comment dit-on « tu fais » en italien ?", a: "fai" },
@@ -83,7 +80,6 @@
       { q: "Comment dit-on « nous faisons » en italien ?", a: "facciamo" },
       { q: "Comment dit-on « vous faites » en italien ?", a: "fate" },
       { q: "Comment dit-on « ils/elles font » en italien ?", a: "fanno" },
-
       // ANDARE
       { q: "Comment dit-on « je vais » en italien ?", a: "vado" },
       { q: "Comment dit-on « tu vas » en italien ?", a: "vai" },
@@ -91,7 +87,6 @@
       { q: "Comment dit-on « nous allons » en italien ?", a: "andiamo" },
       { q: "Comment dit-on « vous allez » en italien ?", a: "andate" },
       { q: "Comment dit-on « ils/elles vont » en italien ?", a: "vanno" },
-
       // POTERE
       { q: "Comment dit-on « je peux » en italien ?", a: "posso" },
       { q: "Comment dit-on « tu peux » en italien ?", a: "puoi" },
@@ -99,7 +94,6 @@
       { q: "Comment dit-on « nous pouvons » en italien ?", a: "possiamo" },
       { q: "Comment dit-on « vous pouvez » en italien ?", a: "potete" },
       { q: "Comment dit-on « ils/elles peuvent » en italien ?", a: "possono" },
-
       // CHIAMARSI
       { q: "Comment dit-on « je m’appelle » en italien ?", a: "mi chiamo" },
       { q: "Comment dit-on « tu t’appelles » en italien ?", a: "ti chiami" },
@@ -109,16 +103,10 @@
       { q: "Comment dit-on « ils/elles s’appellent » en italien ?", a: "si chiamano" }
     ];
 
-    // -------- Persistance anti-"refresh" --------
     const STORAGE_KEY = "it_quiz_state_v1";
 
     const state = {
-      version: 1,
-      indices: [],     // indices dans bank (longueur 20)
-      current: 0,      // index de question en cours (0..19)
-      score: 0,
-      recap: [],       // {i, user, correct, ok}
-      finished: false
+      indices: [], current: 0, score: 0, recap: [], finished: false
     };
 
     function shuffle(array) {
@@ -131,36 +119,23 @@
     }
 
     function pick20Indices() {
-      const all = Array.from({length: bank.length}, (_, i) => i);
-      return shuffle(all).slice(0, 20);
+      return shuffle([...Array(bank.length).keys()]).slice(0, 20);
     }
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
-
     function loadState() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return false;
-      try {
-        const s = JSON.parse(raw);
-        if (!s || s.version !== 1) return false;
-        // validation minimale
-        if (!Array.isArray(s.indices) || typeof s.current !== "number") return false;
-        Object.assign(state, s);
-        return true;
-      } catch { return false; }
+      Object.assign(state, JSON.parse(raw));
+      return true;
     }
+    function clearState() { localStorage.removeItem(STORAGE_KEY); }
 
-    function clearState() {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-
-    // -------- UI --------
     const questionBox = document.getElementById("questionBox");
     const recapDiv = document.getElementById("recap");
     const scoreDiv = document.getElementById("score");
-    const restartBtn = document.getElementById("restartBtn");
 
     function renderRecap() {
       recapDiv.innerHTML = "";
@@ -169,12 +144,9 @@
         const line = document.createElement("div");
         line.className = "recap";
         if (r.ok) {
-          line.innerHTML = `<b>Q${idx+1} :</b> ${bq.q}<br/>
-                            Réponse : <span class="good">${bq.a}</span>`;
+          line.innerHTML = `<b>Q${idx+1} :</b> ${bq.q}<br/>Réponse : <span class="good">${bq.a}</span>`;
         } else {
-          line.innerHTML = `<b>Q${idx+1} :</b> ${bq.q}<br/>
-                            Ta réponse : <span class="bad">${r.user || "(vide)"}</span><br/>
-                            Correct : <span class="good">${bq.a}</span>`;
+          line.innerHTML = `<b>Q${idx+1} :</b> ${bq.q}<br/>Ta réponse : <span class="bad">${r.user || "(vide)"}</span><br/>Correct : <span class="good">${bq.a}</span>`;
         }
         recapDiv.appendChild(line);
       });
@@ -186,11 +158,7 @@
         state.finished = true;
         saveState();
         questionBox.innerHTML =
-          `<div class="question">
-            <h2>Quiz terminé ! Score final : ${state.score} / 20</h2>
-            <button class="btn btn-secondary" onclick="replay()">Rejouer</button>
-           </div>`;
-        restartBtn.style.display = "inline-block";
+          `<div class="question"><h2>Quiz terminé ! Score final : ${state.score} / 20</h2></div>`;
         return;
       }
       const i = state.indices[state.current];
@@ -201,12 +169,10 @@
           <input type="text" id="answer" placeholder="Réponse en italien" autofocus />
           <button class="btn" onclick="submitAnswer()">${state.current === 19 ? "Terminer" : "Valider"}</button>
         </div>`;
-      restartBtn.style.display = "none";
     }
 
     function normalize(s) {
-      if (typeof s !== "string") return "";
-      return s.toLowerCase().trim().replace(/’/g,"'");
+      return (s || "").toLowerCase().trim().replace(/’/g,"'");
     }
 
     function submitAnswer() {
@@ -218,52 +184,37 @@
 
       if (ok) state.score++;
 
-      state.recap.push({ i, user: input.value, correct: bank[i].a, ok });
+      state.recap.push({ i, user: input.value, ok });
       state.current++;
-      saveState();              // <-- on sauve après chaque réponse
-      renderRecap();
-      renderQuestion();
-    }
-
-    function startOrResume() {
-      const restored = loadState();
-      if (!restored || state.finished) {
-        // Nouvelle partie
-        state.indices = pick20Indices();
-        state.current = 0;
-        state.score = 0;
-        state.recap = [];
-        state.finished = false;
-        saveState();           // <-- on sauve le tirage tout de suite
-      }
-      renderRecap();
-      renderQuestion();
-    }
-
-    function replay() {
-      clearState();
-      state.indices = pick20Indices();
-      state.current = 0;
-      state.score = 0;
-      state.recap = [];
-      state.finished = false;
       saveState();
       renderRecap();
       renderQuestion();
     }
 
-    // Alerte douce si on tente de quitter pendant une partie (selon navigateur)
-    window.addEventListener("beforeunload", (e) => {
-      if (!state.finished && state.recap.length < 20) {
-        e.preventDefault();
-        e.returnValue = "";
+    function startOrResume() {
+      if (!loadState() || state.finished) {
+        state.indices = pick20Indices();
+        state.current = 0; state.score = 0; state.recap = []; state.finished = false;
+        saveState();
       }
-    });
+      renderRecap();
+      renderQuestion();
+    }
 
-    // Démarrage
-    startOrResume();
-    window.replay = replay;           // exposé pour le bouton Rejouer
+    function resetQuiz() {
+      clearState();
+      state.indices = pick20Indices();
+      state.current = 0; state.score = 0; state.recap = []; state.finished = false;
+      saveState();
+      renderRecap();
+      renderQuestion();
+    }
+
     window.submitAnswer = submitAnswer;
+    window.resetQuiz = resetQuiz;
+
+    startOrResume();
   </script>
 </body>
 </html>
+
