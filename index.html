@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Italien LV2 - Verbes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .question {
+      background: #fff;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background: #0074D9;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    #score {
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz Italien LV2 - Verbes</h1>
+  <div id="quiz"></div>
+  <button onclick="checkAnswers()">Vérifier mes réponses</button>
+  <div id="score"></div>
+
+  <script>
+    const questions = [
+      { q: "Comment dit-on 'je suis' en italien ?", a: "sono" },
+      { q: "Comment dit-on 'tu as' en italien ?", a: "hai" },
+      { q: "Comment dit-on 'il fait' en italien ?", a: "fa" },
+      { q: "Comment dit-on 'nous allons' en italien ?", a: "andiamo" },
+      { q: "Comment dit-on 'ils peuvent' en italien ?", a: "possono" },
+      { q: "Comment dit-on 'je m’appelle' en italien ?", a: "mi chiamo" },
+      { q: "Conjugue PARLARE avec 'nous' (nous parlons)", a: "parliamo" },
+      { q: "Conjugue CREDERE avec 'vous' (vous croyez)", a: "credete" }
+    ];
+
+    const quizDiv = document.getElementById("quiz");
+    questions.forEach((item, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <p><b>Q${index+1} :</b> ${item.q}</p>
+        <input type="text" id="q${index}" placeholder="Réponse en italien">
+      `;
+      quizDiv.appendChild(div);
+    });
+
+    function checkAnswers() {
+      let score = 0;
+      questions.forEach((item, index) => {
+        const answer = document.getElementById("q"+index).value.trim().toLowerCase();
+        if (answer === item.a.toLowerCase()) {
+          score++;
+        }
+      });
+      document.getElementById("score").innerText = 
+        `Score : ${score} / ${questions.length}`;
+    }
+  </script>
+</body>
+</html>
